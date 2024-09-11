@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+
+  kong-database:
+    image: postgres:10.23-alpine
+    env_file: env/postgres
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - kong-database:/data/postgres
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: ingress
+    networks:
+      - kong
+
+  kong:
+    image: kong:2.8.3-alpine
+    command: kong migrations bootstrap
+    env_file: env/kong
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - kong
+
+networks:
+  kong:
+    external: true
+    name: kong
+
+volumes:
+    kong-database:
+      external: true
+      name: kong-database

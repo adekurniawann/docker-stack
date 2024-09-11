@@ -1,0 +1,8 @@
+NODE_ENV=production
+DB_ADAPTER=postgres
+DB_DATABASE=konga_db
+DB_HOST=kong_kong-database
+DB_PORT=5432
+DB_USER=xxxxxxxx
+DB_PASSWORD=xxxxxxxx
+KONGA_HOOK_TIMEOUT=120000

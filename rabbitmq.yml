@@ -1,0 +1,22 @@
+version: "3.6"
+services:
+  rabbitmq:
+    image: rabbitmq:3.9.26-management
+    hostname: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=xxxxxxxx
+      - RABBITMQ_DEFAULT_PASS=xxxxxxxx
+    networks:
+      - public
+    volumes:
+      - rabbitmq:/root/.rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
+    deploy:
+      mode: global
+
+volumes:
+  rabbitmq:
+  rabbitmq-data:
+networks:
+  public:
+    external: true

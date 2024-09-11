@@ -1,0 +1,79 @@
+version: '3.9'
+services:
+  mongo:
+    image: mongo:5.0.0
+    volumes:
+      - mongo_data:/data/db
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - public
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - es_data:/usr/share/elasticsearch/data
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" 
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      - public
+ 
+  graylog:
+    image: graylog/graylog:5.1.2
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+      - "/etc/localtime:/etc/localtime:ro"
+    environment:
+      - GRAYLOG_PASSWORD_SECRET=xxxxxxxx
+      # Password: admin
+      - GRAYLOG_ROOT_PASSWORD_SHA2=xxxxxxxx
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9800/
+      - GRAYLOG_HTTP_ENABLE_CORS=true
+      - TZ=Asia/Jakarta
+      - GRAYLOG_ROOT_TIMEZONE=Asia/Jakarta
+    entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
+    networks:
+      - public
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - xxxxxxxx:9000
+      # Syslog TCP
+      - xxxxxxxx:1514
+      # Syslog UDP
+      - xxxxxxxx:1514/udp
+      # GELF TCP
+      - xxxxxxxx:12201
+      # GELF UDP to host
+      - target: 12201
+        published: xxxxxxxx
+        protocol: udp
+        mode: host
+      - target: 1111
+        published: xxxxxxxx
+        protocol: udp
+        mode: host
+
+networks:
+  public:
+    external: true
+
+volumes:
+  mongo_data:
+  es_data:
+  graylog_data:
+  es_config:
+  

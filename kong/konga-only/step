@@ -1,0 +1,11 @@
+only works on postgre <= 11 
+
+docker network create -d overlay --attachable konga
+
+docker stack deploy -c init.yml konga (or use portainer)
+
+./db-bootstrap-konga
+
+docker stack rm konga
+
+docker stack deploy -c stack.yml kong (or use portainer)

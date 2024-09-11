@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.1-alpine
+    deploy:
+      replicas: 1
+    ports:
+      - "xxxxxxxx:5432"
+    networks:
+      - public
+    environment:
+      POSTGRES_DB: your_database_name
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  public:
+    external: true
+
+
+volumes:
+  postgres_data:

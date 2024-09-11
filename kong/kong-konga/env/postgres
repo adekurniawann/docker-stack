@@ -1,0 +1,4 @@
+POSTGRES_USER=xxxxxxxx
+POSTGRES_DB=kong
+POSTGRES_PASSWORD=xxxxxxxx
+PGDATA=/data/postgres

@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  pocketbase:
+    image: adeekur861/pocketbase:latest
+    restart: unless-stopped
+    ports:
+      - target: 8090
+        published: xxxxxxxx
+        protocol: tcp
+        mode: ingress
+    labels:
+      - traefik.enable=TRUE
+      - traefik.http.routers.pocketbase.rule=Host(`xxxxxxxx`)
+      - traefik.http.routers.pocketbase.entrypoints=websecure
+      - traefik.http.routers.pocketbase.tls=TRUE
+      - traefik.http.services.pocketbase.loadbalancer.server.port=xxxxxxxx
+    volumes:
+      - pocketbase-data:/app/pocketbase
+    networks:
+      - public
+
+volumes:
+  pocketbase-data:
+networks:
+  public:
+    external: true
+    name: public

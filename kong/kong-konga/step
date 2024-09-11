@@ -1,0 +1,9 @@
+docker network create -d overlay --attachable kong
+
+docker stack deploy -c init.yml kong
+
+./db-bootstrap-konga
+
+docker stack rm kong
+
+docker stack deploy -c stack.yml kong

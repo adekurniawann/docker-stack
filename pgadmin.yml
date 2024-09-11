@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+
+  adminer:
+    image: dpage/pgadmin4:6.14
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: xxxxxxxx
+    ports:
+      - "xxxxxxxx:80"
+    networks:
+      - public
+
+networks:
+  public:
+    external: true

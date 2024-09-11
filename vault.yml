@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  vault:
+    image: "vault:1.11.5"
+    deploy:
+      replicas: 1
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+    ports:
+      - "xxxxxxxx:8200"
+    command: server
+    environment:
+      - "VAULT_ADDR=http://0.0.0.0:8200"
+      - "VAULT_LOCAL_CONFIG={\"backend\": {\"file\": {\"path\": \"/vault/file\"}},\"listener\":{\"tcp\":{\"address\":\"0.0.0.0:8200\",\"tls_disable\":1}},\"ui\":true, \"disable_mlock\":true"
+      - VAULT_TOKEN=s.changeyourtoken
+      - VAULT_API_ADDR=http://0.0.0.0:8200
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+ #     - "/etc/timezone:/etc/timezone:ro"
+ #     - "/home/michaelpurba/forDocker/docbindvolume/grafana:/var/lib/grafana"
+      - "vaultfile:/vault/file"
+    networks:
+      - public
+
+
+networks:
+  public:
+    external: true
+
+volumes:
+  vaultfile:

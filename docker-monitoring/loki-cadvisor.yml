@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+    - xxxxxxxx:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - public
+  
+  loki:
+    image: grafana/loki:2.4.1
+    volumes:
+      - loki-config:/etc/loki
+      - loki-data:/loki
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - target: 3100
+        published: xxxxxxxx
+        protocol: tcp
+        mode: host
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - public
+      
+
+networks:
+  public:
+    external: true
+    name: public
+volumes:
+  loki-config:
+  loki-data:

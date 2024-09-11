@@ -1,0 +1,14 @@
+#!/bin/bash
+
+network_name=netwok_name
+subnet_ip=subnet_ip_range
+# services_to_update=$(docker service ls --format "{{.Name}}" | grep -v -E 'redis|rabbitmq|mongo|loki|kong' | awk '{print $1}') ###Backend
+services_to_update=$(docker service ls --format "{{.Name}}" | grep -E 'loki' | awk '{print $1}') ###Frontend
+
+for service_name in $services_to_update; do
+    docker service scale $service_name=0
+    # docker service update --network-add=$new_network_name $service_name
+    docker service update --network-rm=$network_name $service_name
+    docker service scale $service_name=1
+    docker network rm $netwok_name
+done

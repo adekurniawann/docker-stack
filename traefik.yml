@@ -1,0 +1,43 @@
+version: "3.3"
+
+services:
+
+  reverse-proxy:
+    image: "traefik:v2.9.5"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--log.filePath=/logs/traefik.log"
+      - "--accessLog.filePath=/logs/access.log"
+      - "--log.level=INFO"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+    ports:
+      - "xxxxxxxx:80"
+      - "xxxxxxxx:8080"
+      - "xxxxxxxx:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - traefik_dynamic:/etc/traefik/dynamic
+      - traefik_ssl:/etc/certs:ro
+      - traefik_logs:/logs/
+    networks:
+      - public
+    labels:
+      - traefik.enable=false
+
+networks:
+  public:
+    external: true
+
+volumes:
+  traefik_dynamic:
+  traefik_ssl:
+  traefik_logs:

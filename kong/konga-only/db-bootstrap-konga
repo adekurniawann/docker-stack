@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker run --rm --network=konga pantsel/konga:0.14.9 -c prepare -a postgres \
+            -u postgresql://xxxxxxxx:xxxxxxxx@konga-database:5432/konga_db

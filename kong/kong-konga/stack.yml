@@ -1,0 +1,105 @@
+version: '3.9'
+
+services:
+
+  kong-database:
+    image: postgres:10.23-alpine
+    deploy:
+      replicas: 1
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+    env_file: env/postgres
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - kong-database:/data/postgres
+    networks:
+      - kong
+
+  kong:
+    image: kong:2.8.3-alpine
+    deploy:
+      replicas: 1
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+    env_file: env/kong
+    ports:
+      - target: 8000
+        published: 8002
+        protocol: tcp
+        mode: ingress
+      - target: 8001
+        published: 8001
+        protocol: tcp
+        mode: ingress
+      - target: 8443
+        published: 8443
+        protocol: tcp
+        mode: ingress
+      - target: 8444
+        published: 8444
+        protocol: tcp
+        mode: ingress
+    networks:
+      - kong
+      - public
+
+  konga:
+    image: pantsel/konga:0.14.9
+    deploy:
+      replicas: 1
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+    env_file: env/konga
+    ports:
+      - target: 1337
+        published: 1337
+        protocol: tcp
+        mode: ingress
+    networks:
+      - kong
+
+networks:
+  kong:
+    external: true
+    name: kong
+  public:
+    external: true
+    name: public
+
+volumes:
+  kong-database:
+    external: true
+    name: kong-database

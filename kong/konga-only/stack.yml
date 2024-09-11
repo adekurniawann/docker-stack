@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  konga-database:
+    image: postgres:10.23-alpine
+    deploy:
+      replicas: 1
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+    environment:
+      POSTGRES_USER: 'konga_ops'
+      POSTGRES_DB: 'konga_db'
+      POSTGRES_PASSWORD: 'gantipasswordu'
+      PGDATA: '/data/postgres'
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - konga-database:/data/postgres
+    networks:
+      - konga
+
+  konga:
+    image: pantsel/konga:0.14.9
+    deploy:
+      replicas: 1
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+    environment:
+        - NODE_ENV=production
+        - DB_ADAPTER=postgres
+        - DB_DATABASE=konga_db
+        - DB_HOST=konga-database
+        - DB_PORT=5432
+        - DB_USER=konga_ops
+        - DB_PASSWORD=gantipasswordu
+        - KONGA_HOOK_TIMEOUT=120000
+    ports:
+      - target: 1337
+        published: 1337
+        protocol: tcp
+        mode: ingress
+    networks:
+      - konga
+
+networks:
+  konga:
+    external: true
+    name: konga
+
+volumes:
+    konga-database:
+      external: true
+      name: konga-database
